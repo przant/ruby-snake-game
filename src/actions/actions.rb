@@ -2,7 +2,7 @@ require_relative '../model/state'
 
 module Actions
   def self.move_snake(state)
-    next_direction = state.next_direction
+    next_direction = state.current_direction
     next_position = calc_next_position(state)
 
     # check next position
@@ -15,11 +15,20 @@ module Actions
     end
   end
 
+  def self.change_direction(state, direction)
+    if next_direction_is_valid?(state, direction)
+      state.current_direction = direction
+    else
+      puts "invalid direction"
+    end
+    state
+  end
+
   private
 
   def self.calc_next_position(state)
     current_position = state.snake.positions.first
-    case state.next_direction
+    case state.current_direction
     when Model::Direction::UP
       return next_position = Model::Coord.new(
         current_position.row-1,
@@ -61,5 +70,20 @@ module Actions
   def self.end_game(state)
     state.game_finished = true
     state
+  end
+
+  def self.next_direction_is_valid?(state, direction)
+    case state.current_direction
+    when Model::Direction::UP
+      return true if direction != Model::Direction::DOWN
+    when Model::Direction::DOWN
+      return true if direction != Model::Direction::UP
+    when Model::Direction::LEFT
+      return true if direction != Model::Direction::RIGHT
+    when Model::Direction::RIGHT
+      return true if direction != Model::Direction::LEFT
+    end
+
+    return false
   end
 end
