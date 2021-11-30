@@ -1,5 +1,6 @@
 require 'byebug'
 require 'ruby2d'
+require_relative '../model/state'
 
 module View
   class Ruby2dView
@@ -7,24 +8,27 @@ module View
       @pixel_size = 50
     end
 
-    def render(state)
+    def start(state)
       extend Ruby2D::DSL
       set(
         title: "Snake", 
         width: @pixel_size * state.grid.cols, 
-        height: @pixel_size * state.grid.rows
-      )
+        height: @pixel_size * state.grid.rows)
+      show
+    end
+
+    def render_game(state)
       render_food(state)
       render_snake(state)
-      show
     end
 
     private
 
     def render_food(state)
+      @food.remove if @food
       extend Ruby2D::DSL
       food = state.food
-      Square.new(
+      @food = Square.new(
         x: food.col * @pixel_size,
         y: food.row * @pixel_size,
         size: @pixel_size,
@@ -33,9 +37,11 @@ module View
     end
 
     def render_snake(state)
+      @snake_positions.each(&:remove) if @snake_positions
+
       extend Ruby2D::DSL
       snake = state.snake
-      snake.positions.each do |position|
+      @snake_positions = snake.positions.map do |position|
         Square.new(
           x: position.col * @pixel_size,
           y: position.row * @pixel_size,

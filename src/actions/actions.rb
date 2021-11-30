@@ -7,10 +7,10 @@ module Actions
 
     # check next position
     if position_is_valid?(state, next_position)
-      # if next position is invalid, then exit game
+      # if next position is valid, then move snake
       move_snake_to(state, next_position)
     else
-      # if next position is valid, then move snake
+      # if next position is invalid, then exit game
       end_game(state)
     end
   end
@@ -58,7 +58,8 @@ module Actions
     state
   end
 
-  def end_game(state)
+  def self.end_game(state)
     state.game_finished = true
+    state
   end
 end
